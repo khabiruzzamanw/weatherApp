@@ -108,18 +108,28 @@
     </div>
   </body>
   <script>
+    const city = document.querySelector("#search");
+    const go = document.querySelector("#go");
+
     go.addEventListener("click", function (e) {
       e.preventDefault();
-      let city = document.querySelector("#search");
       let cityName = city.value;
       request(cityName);
+    });
+    city.addEventListener("keydown", function (e) {
+      // e.preventDefault();
+      console.log("hello");
+      let cityName = city.value;
+
+      if (e.key === "Enter") {
+        request(cityName);
+      }
     });
 
     async function request(cityName) {
       // const api = "https://api.openweathermap.org/data/2.5/weather?";
       // const apiKey = "baf121166603d8940559c2dfd69ff368";
 
-      const go = document.querySelector("#go");
       const dCity = document.querySelector("#city");
       const temp = document.querySelector("#temp");
       const weatherInfo = document.querySelector(".weatherInfo");
