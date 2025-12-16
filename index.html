@@ -8,7 +8,7 @@
       :root {
         --bg-color: #040d12;
         --blur-bg-color: rgba(255, 255, 255, 0);
-        --card-bg-color: #00000005;
+        --card-bg-color: #ffffff50;
         --container-color: #ffffff15;
         --image-bg-color: rgb(20, 20, 20);
         --font-color: #f2f2f2;
@@ -17,7 +17,7 @@
         --red-font: crimson;
         --bar-color: #333333;
         --thin-border-color: rgba(255, 255, 255, 0.15);
-        --box-shadow-color: rgba(150, 150, 150, 0.01);
+        --box-shadow-color: rgba(0, 0, 0, 0.155);
         --text-shadow-color: black;
         --icon-color: #333333;
         --button-color: #5f7470;
@@ -37,6 +37,7 @@
 
       body {
         background-color: var(--bg-color);
+        /* background-color: white; */
         font-family: Arial, Helvetica, sans-serif;
         color: var(--font-color);
         min-height: 100dvh;
@@ -44,14 +45,33 @@
         justify-content: center;
         align-items: center;
       }
+      img {
+        max-width: 100%;
+      }
+
+      main {
+        background-image: url(/images/bg.jpg);
+        background-size: contain;
+        position: relative;
+        min-height: 100dvh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+      }
 
       .container {
-        background-color: var(--container-color);
+        background-image: url(/images/weatherBg.jpg);
+        background-size: cover;
         padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 0 1rem var(--box-shadow-color),
+          0 0 2rem var(--box-shadow-color);
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        text-align: center;
         gap: 4rem;
       }
 
@@ -80,41 +100,81 @@
       }
 
       .weatherInfo {
+        display: none;
+      }
+
+      .para {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+      }
+
+      .cityName {
+        font-size: 2rem;
+      }
+
+      .temp {
         display: flex;
-        flex-direction: column;
         justify-content: center;
         align-items: center;
-        gap: 1rem;
       }
 
       #invalidInput {
         font-size: 1.5rem;
         display: none;
       }
+
+      .info {
+        display: flex;
+        gap: 2rem;
+      }
     </style>
   </head>
+
   <body>
-    <div class="container">
-      <h1>Weather Checker</h1>
-      <div class="searchBar">
-        <input type="text" id="search" />
-        <button id="go">Go</button>
+    <main>
+      <div class="container">
+        <h1>Weather App</h1>
+        <div class="searchBar">
+          <input type="text" id="search" />
+          <button id="go">Go</button>
+        </div>
+        <p id="invalidInput"></p>
+        <div class="weatherInfo">
+          <img id="sky" src="" alt="" />
+          <p class="para" id="cityPara">City</p>
+          <p class="para cityName" id="city"></p>
+          <div class="temp">
+            <img src="/images/temperature.svg" alt="" />
+            <p class="para" id="tempPara">Temperature</p>
+          </div>
+          <p class="para" id="temp"></p>
+          <div class="info">
+            <div class="wind">
+              <img src="/images/airy.svg" alt="" />
+              <p class="para" id="windPara"></p>
+              <p class="para" id="windSpeed"></p>
+            </div>
+            <div class="humidity">
+              <img src="/images/humidity.svg" alt="this is an image" />
+
+              <p class="para" id="humidityPara">Humidity</p>
+              <p class="para" id="humidity"></p>
+            </div>
+          </div>
+        </div>
       </div>
-      <p id="invalidInput"></p>
-      <div class="weatherInfo">
-        <h2 id="city"></h2>
-        <p id="temp"></p>
-      </div>
-    </div>
+    </main>
   </body>
   <script>
     const city = document.querySelector("#search");
-    const go = document.querySelector("#go");
+    function dofunc() {
+      let cityName = city.value;
+      request(cityName);
+    }
 
     go.addEventListener("click", function (e) {
       e.preventDefault();
-      let cityName = city.value;
-      request(cityName);
+      dofunc();
     });
     city.addEventListener("keydown", function (e) {
       // e.preventDefault();
@@ -126,34 +186,56 @@
       }
     });
 
-    async function request(cityName) {
+    city.addEventListener("keydown", function (e) {
+      // e.preventDefault();
+      if (e.key === "Enter") {
+        dofunc();
+      }
+      // console.log("hello");
+    });
+
+    async function request(value) {
       // const api = "https://api.openweathermap.org/data/2.5/weather?";
       // const apiKey = "baf121166603d8940559c2dfd69ff368";
 
       const dCity = document.querySelector("#city");
       const temp = document.querySelector("#temp");
       const weatherInfo = document.querySelector(".weatherInfo");
+      const info = document.querySelector(".info");
+      const windSpeed = document.querySelector("#windSpeed");
+      const humidity = document.querySelector("#humidity");
+      const sky = document.querySelector("#sky");
 
       let data = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&units=metric&appid=baf121166603d8940559c2dfd69ff368`
+        `https://api.openweathermap.org/data/2.5/weather?q=${value}&units=metric&appid=baf121166603d8940559c2dfd69ff368`
       );
 
       let weatherData = await data.json();
 
-      if (weatherData.cod === "404" || weatherData.cod === "400") {
-        const invalidInput = document.querySelector("#invalidInput");
-        invalidInput.style.display = "block";
-        invalidInput.innerHTML = `Input a valid CITY`;
-        weatherInfo.style.display = "none";
-      } else {
+      try {
+        console.log(weatherData.weather[0].icon);
+        // const skyUrl = `https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`;
+
+        weatherInfo.style.display = "block";
+        sky.src = `https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`;
+        // sky.src =   skyUrl;
+
         dCity.innerHTML = weatherData.name;
         temp.innerHTML = Math.round(weatherData.main.temp) + ` ℃`;
+        windSpeed.innerHTML =
+          (weatherData.wind.speed * 3.6).toFixed(2) + ` km/h`;
+        humidity.innerHTML = weatherData.main.humidity + ` %`;
         invalidInput.style.display = "none";
 
         // console.log(typeof data);
         // console.log(typeof weatherData);
         console.log(weatherData);
         // console.log((temp.innerHTML = weatherData.main.temp));
+      } catch (error) {
+        const invalidInput = document.querySelector("#invalidInput");
+        invalidInput.style.display = "block";
+        invalidInput.innerHTML = `Input a valid CITY`;
+        weatherInfo.style.display = "none";
       }
     }
   </script>
