@@ -50,8 +50,12 @@
       }
 
       main {
-        background-image: url(images/bg.jpg);
-        background-size: contain;
+        background-image: url(/images/bg.jpg);
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center center;
+        background-repeat: no-repeat;
         position: relative;
         min-height: 100dvh;
         display: flex;
@@ -61,8 +65,10 @@
       }
 
       .container {
-        background-image: url(images/weatherBg.jpg);
+        background-image: url(/images/weatherBg.jpg);
         background-size: cover;
+        background-position: center center;
+        background-repeat: no-repeat;
         padding: 2rem;
         border-radius: 1rem;
         box-shadow: 0 0 1rem var(--box-shadow-color),
